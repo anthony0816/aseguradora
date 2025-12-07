@@ -8,13 +8,11 @@ import SquareFootIcon from "@mui/icons-material/SquareFoot";
 import AddIcon from "@mui/icons-material/Add";
 
 interface useNavegablesProps {
-  section: string;
-  subsection: string;
-  action: () => void;
+  router: (pathname: string) => void;
 }
-export default function useNavegables(
-  actions: useNavegablesProps[]
-): AcordionOptionsProps[] {
+export default function useNavegables({
+  router,
+}: useNavegablesProps): AcordionOptionsProps[] {
   return [
     {
       value: "Trades",
@@ -31,26 +29,14 @@ export default function useNavegables(
           icon={<FormatListNumberedIcon />}
           size={"md"}
           title="list trades"
-          onClick={() =>
-            actions
-              .find(
-                (a) => a.section === "trades" && a.subsection === "listTrades"
-              )
-              ?.action()
-          }
+          onClick={() => router("/aseguradora/listTrades")}
         />,
         <AcordionOptionsContent
           key={"createTrade"}
           icon={<AddIcon />}
           title="Create new Trade"
           size={"md"}
-          onClick={() =>
-            actions
-              .find(
-                (a) => a.section === "trades" && a.subsection === "createTrade"
-              )
-              ?.action()
-          }
+          onClick={() => router("/aseguradora/createTrade")}
         />,
       ],
     },
@@ -69,26 +55,14 @@ export default function useNavegables(
           icon={<FormatListNumberedIcon />}
           size={"md"}
           title="list rules"
-          onClick={() =>
-            actions
-              .find(
-                (a) => a.section === "rules" && a.subsection === "listRules"
-              )
-              ?.action()
-          }
+          onClick={() => router("/aseguradora/listRules")}
         />,
         <AcordionOptionsContent
           key={"createRule"}
           icon={<AddIcon />}
           size={"md"}
           title="Create new Rule"
-          onClick={() =>
-            actions
-              .find(
-                (a) => a.section === "rules" && a.subsection === "createRule"
-              )
-              ?.action()
-          }
+          onClick={() => router("/aseguradora/createRule")}
         />,
       ],
     },

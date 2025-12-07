@@ -13,13 +13,18 @@ import AcordionOptions from "./acordionOptions";
 import useNavegables from "../hooks/useNavegables";
 import { useRouter } from "next/navigation";
 import UserCard from "@/core/user/components/userCard";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface LayoutProviderProps {
   children: React.ReactNode;
 }
 
 export default function LayoutProvider({ children }: LayoutProviderProps) {
-  const router = useRouter();
+  const router: AppRouterInstance = useRouter();
+
+  function navegate(pathname: string) {
+    router.push(pathname);
+  }
   return (
     <>
       <VStack
@@ -53,30 +58,7 @@ export default function LayoutProvider({ children }: LayoutProviderProps) {
               <Heading as={"h1"}> Aseguradora</Heading>
               <Separator mb={10} />
               <Box overflowY={"auto"} overflowX={"hidden"} maxH={"80vh"}>
-                <AcordionOptions
-                  items={useNavegables([
-                    {
-                      section: "trades",
-                      subsection: "listTrades",
-                      action: () => router.push("/aseguradora/listTrades"),
-                    },
-                    {
-                      section: "trades",
-                      subsection: "createTrade",
-                      action: () => router.push("/aseguradora/createTrade"),
-                    },
-                    {
-                      section: "rules",
-                      subsection: "listRules",
-                      action: () => router.push("/aseguradora/listRules"),
-                    },
-                    {
-                      section: "rules",
-                      subsection: "createRule",
-                      action: () => router.push("/aseguradora/createRule"),
-                    },
-                  ])}
-                />
+                <AcordionOptions items={useNavegables({ router: navegate })} />
               </Box>
             </Box>
             <Box>

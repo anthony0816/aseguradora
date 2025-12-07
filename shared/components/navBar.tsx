@@ -4,9 +4,10 @@ import useNavegables from "../hooks/useNavegables";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import UserCard from "@/core/user/components/userCard";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function NavBar() {
-  const router = useRouter();
+  const router: AppRouterInstance = useRouter();
   const [openMenu, setOpenMenu] = useState(false);
 
   function navegate(pathname: string) {
@@ -32,28 +33,7 @@ export default function NavBar() {
       }}
     >
       <MobileLateralMenu
-        items={useNavegables([
-          {
-            section: "trades",
-            subsection: "listTrades",
-            action: () => navegate("/aseguradora/listTrades"),
-          },
-          {
-            section: "trades",
-            subsection: "createTrade",
-            action: () => navegate("/aseguradora/createTrade"),
-          },
-          {
-            section: "rules",
-            subsection: "listRules",
-            action: () => navegate("/aseguradora/listRules"),
-          },
-          {
-            section: "rules",
-            subsection: "createRule",
-            action: () => navegate("/aseguradora/createRule"),
-          },
-        ])}
+        items={useNavegables({ router: navegate })}
         title={"Aseguradora"}
         triggerSize={"xs"}
         open={openMenu}
