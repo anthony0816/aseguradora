@@ -10,6 +10,11 @@ const customConfig = defineConfig({
           800: { value: "#153e75" },
           700: { value: "#2a69ac" },
         },
+
+        hover: {
+          light: { value: "#e0e7ff" },
+          dark: { value: "#2d3748" },
+        },
       },
       fonts: {
         heading: { value: `'Inter', sans-serif` },
