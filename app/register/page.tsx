@@ -17,6 +17,7 @@ import Link from "next/link";
 import AuthInput from "@/core/auth/components/authinput";
 import ModalNotification from "@/shared/components/modalNotifications";
 import { useAuth } from "@/core/auth/hooks/authHook";
+import { ApiService } from "@/shared/services/api";
 
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -56,33 +57,24 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-        password_confirmation: passwordConfirmation,
-        is_admin: false,
-      }),
-    });
-
-    setLoading(false);
-
-    if (!res.ok) {
-      const data = await res.json();
-      setNotifiTitle("Error al registrar");
-      setNotifiContent(data.message || "Error inesperado");
-      setOpenModalNotification(true);
-      return;
-    }
-
-    const data = await res.json();
     
-    // Autenticar automáticamente
-    login(data.access_token, data.user);
-    router.push("/aseguradora");
+    try {
+      const data = await ApiService.register(name, email, password, passwordConfirmation);
+      
+      setNotifiTitle("Registro exitoso");
+      setNotifiContent("Usuario registrado correctamente. Ahora puedes iniciar sesión.");
+      setOpenModalNotification(true);
+      
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (error: any) {
+      setNotifiTitle("Error al registrar");
+      setNotifiContent(error.message || "Error inesperado");
+      setOpenModalNotification(true);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

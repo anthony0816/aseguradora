@@ -69,7 +69,7 @@ export default function LayoutProvider({ children }: LayoutProviderProps) {
                 <NotificationsButton />
               </Flex>
               <Separator mb={10} />
-              <Box overflowY={"auto"} overflowX={"hidden"} maxH={"80vh"}>
+              <Box overflowY={"auto"} overflowX={"hidden"} maxH={"75vh"}>
                 <AcordionOptions items={useNavegables({ router: navegate })} />
               </Box>
             </Box>

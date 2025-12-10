@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { apiBaseUrl } from "@/shared/consts/baseUrl";
 
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
+    const url = new URL(request.url);
+    const searchParams = url.searchParams.toString();
+    const endpoint = searchParams ? `${apiBaseUrl}/api/accounts?${searchParams}` : `${apiBaseUrl}/api/accounts`;
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL_DEV}/api/accounts`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authHeader || "",
-        },
-      }
-    );
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader || "",
+      },
+    });
 
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL_DEV}/api/accounts`,
+      `${apiBaseUrl}/api/accounts`,
       {
         method: "POST",
         headers: {

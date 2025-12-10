@@ -24,7 +24,7 @@ import ModalNotification from "@/shared/components/modalNotifications";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/core/auth/hooks/authHook";
 import { tk } from "@/core/auth/consts/consts";
-import { apiBaseUrl } from "../../shared/consts/baseUrl";
+import { ApiService } from "@/shared/services/api";
 
 export default function LoginPage() {
   // User data
@@ -47,7 +47,6 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (localStorage.getItem(tk.access_token)) router.push("/");
-    console.log(apiBaseUrl);
   }, [router]);
 
   async function handleSubmit(
@@ -64,38 +63,22 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: username,
-        password,
-      }),
-    });
+    
+    try {
+      const data = await ApiService.login(username, password);
+      
+      console.log("data del backend ", data.user);
 
-    setLoading(false);
-
-    if (res.status == 401) {
-      const { error, details } = await res.json();
-      setNotifiTitle(error);
-      setNotifiContent(details);
+      // log the user
+      login(data.access_token, data.user);
+      router.push("/aseguradora");
+    } catch (error: any) {
+      setNotifiTitle("Error de autenticación");
+      setNotifiContent(error.message || "Credenciales incorrectas");
       setOpenModalNotification(true);
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    if (!res.ok) {
-      setNotifiTitle("Unexpected Error");
-      setOpenModalNotification(true);
-      return;
-    }
-
-    const data = await res.json();
-
-    console.log("data del backend ", data.user);
-
-    // log the user
-    login(data.access_token, data.user);
-    router.push("/aseguradora");
   }
 
   return (

@@ -9,6 +9,7 @@ interface AuthInputProps {
   endElement?: React.ReactNode;
   value?: string;
   required?: boolean;
+  step?: string;
   type?:
     | "number"
     | "color"
@@ -46,6 +47,7 @@ export default function AuthInput({
   value,
   type,
   required,
+  step,
   onChange,
 }: AuthInputProps) {
   return (
@@ -58,6 +60,7 @@ export default function AuthInput({
           type={type}
           placeholder={placeholder}
           required={required}
+          step={step}
         />
       </InputGroup>
       <Field.ErrorText>{error}</Field.ErrorText>

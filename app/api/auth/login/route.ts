@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { apiBaseUrl } from "@/shared/consts/baseUrl";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL_DEV}/api/login`,
+      `${apiBaseUrl}/api/login`,
       {
         method: "POST",
         headers: {

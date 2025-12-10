@@ -3,22 +3,18 @@
 import { Box, Heading, Table, Button, Flex, IconButton, Badge } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/core/auth/hooks/authHook";
+import { ApiService } from "@/shared/services/api";
+import { Account } from "@/shared/types";
 import Link from "next/link";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-
-interface Account {
-  id: number;
-  login: number;
-  trading_status: string;
-  status: string;
-  created_at: string;
-}
+import WarningIcon from "@mui/icons-material/Warning";
 
 export default function ListAccountsPage() {
-  const { accessToken } = useAuth();
+  const { user } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAccounts();
@@ -26,60 +22,53 @@ export default function ListAccountsPage() {
 
   async function fetchAccounts() {
     setLoading(true);
-    const res = await fetch("/api/accounts", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    if (res.ok) {
-      const data = await res.json();
+    setError(null);
+    
+    try {
+      // Si es admin, puede ver todas las cuentas con ?all=true
+      const data = await ApiService.getAccounts(user?.is_admin || false);
       setAccounts(data);
+    } catch (error: any) {
+      setError(error.message);
+      console.error("Error al cargar cuentas:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function toggleTradingStatus(account: Account) {
-    const newStatus = account.trading_status === "enable" ? "disable" : "enable";
-    const res = await fetch(`/api/accounts/${account.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ trading_status: newStatus }),
-    });
-
-    if (res.ok) {
+    try {
+      const newStatus = account.trading_status === "enable" ? "disable" : "enable";
+      await ApiService.updateAccount(account.id, { trading_status: newStatus });
       fetchAccounts();
+    } catch (error: any) {
+      console.error("Error al cambiar estado de trading:", error);
     }
   }
 
   async function toggleStatus(account: Account) {
-    const newStatus = account.status === "enable" ? "disable" : "enable";
-    const res = await fetch(`/api/accounts/${account.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
-
-    if (res.ok) {
+    try {
+      const newStatus = account.status === "enable" ? "disable" : "enable";
+      await ApiService.updateAccount(account.id, { status: newStatus });
       fetchAccounts();
+    } catch (error: any) {
+      console.error("Error al cambiar estado de cuenta:", error);
     }
   }
 
   async function deleteAccount(id: number) {
     if (!confirm("¿Estás seguro de eliminar esta cuenta?")) return;
 
-    const res = await fetch(`/api/accounts/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    if (res.ok || res.status === 204) {
+    try {
+      await ApiService.deleteAccount(id);
       fetchAccounts();
+    } catch (error: any) {
+      console.error("Error al eliminar cuenta:", error);
     }
+  }
+
+  function hasActiveIncidents(account: Account): boolean {
+    return account.incidents ? account.incidents.length > 0 : false;
   }
 
   return (
@@ -100,6 +89,25 @@ export default function ListAccountsPage() {
       {loading ? (
         <Box textAlign="center" py={10}>
           <p>Cargando cuentas...</p>
+        </Box>
+      ) : error ? (
+        <Box
+          textAlign="center"
+          py={12}
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="red.50"
+          _dark={{ bg: "red.900" }}
+        >
+          <Heading size="md" mb={2} color="red.600">
+            Error al cargar cuentas
+          </Heading>
+          <Box color="red.500" mb={4}>
+            {error}
+          </Box>
+          <Button colorPalette="red" onClick={fetchAccounts}>
+            Reintentar
+          </Button>
         </Box>
       ) : accounts.length === 0 ? (
         <Box
@@ -125,8 +133,10 @@ export default function ListAccountsPage() {
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>Cuenta</Table.ColumnHeader>
+              <Table.ColumnHeader>Propietario</Table.ColumnHeader>
               <Table.ColumnHeader>Estado de Trading</Table.ColumnHeader>
               <Table.ColumnHeader>Estado General</Table.ColumnHeader>
+              <Table.ColumnHeader>Riesgos</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
@@ -135,9 +145,14 @@ export default function ListAccountsPage() {
               <Table.Row key={account.id}>
                 <Table.Cell>
                   <Box>
-                    <Box fontWeight="bold" fontSize="lg">
-                      {account.login}
-                    </Box>
+                    <Flex align="center" gap={2}>
+                      <Box fontWeight="bold" fontSize="lg">
+                        {account.login}
+                      </Box>
+                      {hasActiveIncidents(account) && (
+                        <WarningIcon fontSize="small" color="warning" />
+                      )}
+                    </Flex>
                     <Box fontSize="xs" color="gray.500" mt={1}>
                       Creada:{" "}
                       {new Date(account.created_at).toLocaleDateString("es-ES", {
@@ -147,6 +162,19 @@ export default function ListAccountsPage() {
                       })}
                     </Box>
                   </Box>
+                </Table.Cell>
+                <Table.Cell>
+                  {account.owner ? (
+                    <Box>
+                      <Box fontWeight="medium">{account.owner.name}</Box>
+                      <Box fontSize="xs" color="gray.500">{account.owner.email}</Box>
+                      {account.owner.is_admin && (
+                        <Badge colorPalette="purple" size="sm">Admin</Badge>
+                      )}
+                    </Box>
+                  ) : (
+                    <Box fontSize="sm" color="gray.500">Sin propietario</Box>
+                  )}
                 </Table.Cell>
                 <Table.Cell>
                   <Flex direction="column" gap={2}>
@@ -189,6 +217,22 @@ export default function ListAccountsPage() {
                       {account.status === "enable" ? "Desactivar" : "Activar"}
                     </Button>
                   </Flex>
+                </Table.Cell>
+                <Table.Cell>
+                  <Box>
+                    {hasActiveIncidents(account) ? (
+                      <Badge colorPalette="red" mb={1}>
+                        {account.incidents?.length} incidentes
+                      </Badge>
+                    ) : (
+                      <Badge colorPalette="green" mb={1}>
+                        Sin incidentes
+                      </Badge>
+                    )}
+                    <Box fontSize="xs" color="gray.500">
+                      Trades: {account.trades?.length || 0}
+                    </Box>
+                  </Box>
                 </Table.Cell>
                 <Table.Cell>
                   <IconButton

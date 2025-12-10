@@ -4,7 +4,7 @@ import useNavegables from "../hooks/useNavegables";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import UserCard from "@/core/user/components/userCard";
-import NotificationsButton from "./notificationsButton";
+
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function NavBar() {
@@ -45,7 +45,6 @@ export default function NavBar() {
         onTitleClick={() => navegate("/aseguradora")}
       />
       <Flex gap={2} align="center">
-        <NotificationsButton />
         <UserCard />
       </Flex>
     </HStack>

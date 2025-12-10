@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { apiBaseUrl } from "@/shared/consts/baseUrl";
 
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL_DEV}/api/trades`,
+      `${apiBaseUrl}/api/trades`,
       {
         method: "GET",
         headers: {
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL_DEV}/api/trades`,
+      `${apiBaseUrl}/api/trades`,
       {
         method: "POST",
         headers: {

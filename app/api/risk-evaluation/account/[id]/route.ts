@@ -1,23 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiBaseUrl } from "@/shared/consts/baseUrl";
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const body = await request.json();
+    const authHeader = request.headers.get("authorization");
+    const accountId = params.id;
 
     const response = await fetch(
-      `${apiBaseUrl}/api/register`,
+      `${apiBaseUrl}/api/risk-evaluation/account/${accountId}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: authHeader || "",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({}),
       }
     );
 
     const data = await response.json();
-
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
