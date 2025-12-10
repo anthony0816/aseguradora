@@ -80,47 +80,93 @@ export default function ListTradesPage() {
   }
 
   return (
-    <Box p={6}>
+    <Box h="full" overflowY="auto" p={6}>
       <Flex justifyContent="space-between" alignItems="center" mb={6}>
-        <Heading as="h1">Mis Trades</Heading>
+        <Box>
+          <Heading as="h1">Mis Trades</Heading>
+          <Box fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }} mt={1}>
+            {trades.filter((t) => t.status === "open").length} abiertos de{" "}
+            {trades.length} trades
+          </Box>
+        </Box>
         <Link href="/aseguradora/createTrade">
-          <Button>Crear Trade</Button>
+          <Button colorPalette="blue">Crear Trade</Button>
         </Link>
       </Flex>
 
       {loading ? (
-        <p>Cargando...</p>
-      ) : trades.length === 0 ? (
         <Box textAlign="center" py={10}>
-          <p>No tienes trades creados</p>
+          <p>Cargando trades...</p>
+        </Box>
+      ) : trades.length === 0 ? (
+        <Box
+          textAlign="center"
+          py={12}
+          borderWidth="1px"
+          borderRadius="lg"
+          bg="gray.50"
+          _dark={{ bg: "gray.800" }}
+        >
+          <Heading size="md" mb={2}>
+            No tienes trades creados
+          </Heading>
+          <Box color="gray.600" _dark={{ color: "gray.400" }} mb={4}>
+            Crea tu primer trade para comenzar
+          </Box>
           <Link href="/aseguradora/createTrade">
-            <Button mt={4}>Crear primer trade</Button>
+            <Button colorPalette="blue">Crear primer trade</Button>
           </Link>
         </Box>
       ) : (
         <Table.Root>
           <Table.Header>
             <Table.Row>
-              <Table.ColumnHeader>Cuenta</Table.ColumnHeader>
+              <Table.ColumnHeader>Trade</Table.ColumnHeader>
               <Table.ColumnHeader>Tipo</Table.ColumnHeader>
               <Table.ColumnHeader>Volumen</Table.ColumnHeader>
-              <Table.ColumnHeader>Precio</Table.ColumnHeader>
+              <Table.ColumnHeader>Precios</Table.ColumnHeader>
               <Table.ColumnHeader>Estado</Table.ColumnHeader>
-              <Table.ColumnHeader>Fecha</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {trades.map((trade) => (
               <Table.Row key={trade.id}>
-                <Table.Cell>{trade.account.login}</Table.Cell>
+                <Table.Cell>
+                  <Box>
+                    <Box fontWeight="bold">Cuenta: {trade.account.login}</Box>
+                    <Box fontSize="xs" color="gray.500" mt={1}>
+                      {new Date(trade.open_time).toLocaleString("es-ES", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </Box>
+                  </Box>
+                </Table.Cell>
                 <Table.Cell>
                   <Badge colorPalette={trade.type === "BUY" ? "green" : "red"}>
                     {trade.type}
                   </Badge>
                 </Table.Cell>
-                <Table.Cell>{trade.volume}</Table.Cell>
-                <Table.Cell>{trade.open_price}</Table.Cell>
+                <Table.Cell>
+                  <Box fontWeight="medium">{trade.volume}</Box>
+                  <Box fontSize="xs" color="gray.500">
+                    lotes
+                  </Box>
+                </Table.Cell>
+                <Table.Cell>
+                  <Box fontSize="sm">
+                    <Box>Apertura: {trade.open_price}</Box>
+                    {trade.close_price && (
+                      <Box color="gray.600" mt={1}>
+                        Cierre: {trade.close_price}
+                      </Box>
+                    )}
+                  </Box>
+                </Table.Cell>
                 <Table.Cell>
                   <Badge
                     colorPalette={trade.status === "open" ? "blue" : "gray"}
@@ -129,13 +175,11 @@ export default function ListTradesPage() {
                   </Badge>
                 </Table.Cell>
                 <Table.Cell>
-                  {new Date(trade.open_time).toLocaleString()}
-                </Table.Cell>
-                <Table.Cell>
                   <Flex gap={2}>
                     {trade.status === "open" && (
                       <IconButton
                         size="sm"
+                        variant="outline"
                         colorPalette="orange"
                         onClick={() => closeTrade(trade)}
                         title="Cerrar trade"
@@ -145,8 +189,10 @@ export default function ListTradesPage() {
                     )}
                     <IconButton
                       size="sm"
+                      variant="outline"
                       colorPalette="red"
                       onClick={() => deleteTrade(trade.id)}
+                      title="Eliminar"
                     >
                       <DeleteIcon fontSize="small" />
                     </IconButton>

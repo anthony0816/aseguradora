@@ -5,6 +5,9 @@ import {
   Button,
   Heading,
   Stack,
+  Text,
+  HStack,
+  Flex,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -94,7 +97,7 @@ export default function CreateTradePage() {
   }
 
   return (
-    <Box p={6}>
+    <Box h="full" overflowY="auto" p={6}>
       <ModalNotification
         open={openModalNotification}
         onOpenChange={() => setOpenModalNotification(!openModalNotification)}
@@ -102,74 +105,96 @@ export default function CreateTradePage() {
         content={notifiContent}
       />
 
-      <Heading as="h1" mb={6}>
-        Crear Trade
-      </Heading>
-
-      <form onSubmit={handleSubmit}>
-        <Box maxW="500px" p={6} rounded="lg" boxShadow="md">
-        <Stack spaceY={4}>
-          <Box>
-            <label>Cuenta</label>
-            <select
-              value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-              }}
-              required
-            >
-              <option value="">Selecciona una cuenta</option>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.login}
-                </option>
-              ))}
-            </select>
-          </Box>
-
-          <Box>
-            <label>Tipo</label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-              }}
-            >
-              <option value="BUY">BUY</option>
-              <option value="SELL">SELL</option>
-            </select>
-          </Box>
-
-          <AuthInput
-            label="Volumen"
-            placeholder="1.5"
-            type="number"
-            onChange={(value) => setVolume(value)}
-            required
-          />
-
-          <AuthInput
-            label="Precio de Apertura"
-            placeholder="1.2345"
-            type="number"
-            onChange={(value) => setOpenPrice(value)}
-            required
-          />
-
-          <Button type="submit" loading={loading}>
-            Crear Trade
-          </Button>
-        </Stack>
+      <Box maxW="700px" mx="auto">
+        <Heading as="h1" mb={2}>
+          Crear Trade
+        </Heading>
+        <Box color="gray.600" _dark={{ color: "gray.400" }} mb={6} fontSize="sm">
+          Registra una nueva operación de trading
         </Box>
-      </form>
+
+        <form onSubmit={handleSubmit}>
+          <Box p={6} rounded="lg" borderWidth="1px" bg="white" _dark={{ bg: "gray.800" }}>
+            <Stack spaceY={4}>
+              <Box>
+                <Text fontWeight="medium" mb={2}>
+                  Cuenta
+                </Text>
+                <select
+                  value={accountId}
+                  onChange={(e) => setAccountId(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    border: "1px solid #ccc",
+                  }}
+                  required
+                >
+                  <option value="">Selecciona una cuenta</option>
+                  {accounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.login}
+                    </option>
+                  ))}
+                </select>
+                <Text fontSize="sm" color="gray.500" mt={2}>
+                  Selecciona la cuenta donde se ejecutará el trade
+                </Text>
+              </Box>
+
+              <Box>
+                <Text fontWeight="medium" mb={2}>
+                  Tipo de Operación
+                </Text>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "6px",
+                    border: "1px solid #ccc",
+                  }}
+                >
+                  <option value="BUY">BUY (Compra)</option>
+                  <option value="SELL">SELL (Venta)</option>
+                </select>
+              </Box>
+
+              <AuthInput
+                label="Volumen (lotes)"
+                placeholder="1.5"
+                type="number"
+                step="0.01"
+                onChange={(value) => setVolume(value)}
+                required
+              />
+
+              <AuthInput
+                label="Precio de Apertura"
+                placeholder="1.2345"
+                type="number"
+                step="0.00001"
+                onChange={(value) => setOpenPrice(value)}
+                required
+              />
+
+              <HStack justify="flex-end" gap={3} mt={4}>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/aseguradora/listTrades")}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" loading={loading} colorPalette="blue">
+                  Crear Trade
+                </Button>
+              </HStack>
+            </Stack>
+          </Box>
+        </form>
+      </Box>
     </Box>
   );
 }
