@@ -117,7 +117,10 @@ async function runTests() {
     })
   });
 
-  if (createAccountResult.data && createAccountResult.data.id) {
+  if (createAccountResult.data && createAccountResult.data.data && createAccountResult.data.data.id) {
+    accountId = createAccountResult.data.data.id;
+    console.log(`✅ Cuenta creada con ID: ${accountId}\n`);
+  } else if (createAccountResult.data && createAccountResult.data.id) {
     accountId = createAccountResult.data.id;
     console.log(`✅ Cuenta creada con ID: ${accountId}\n`);
   }
@@ -135,7 +138,7 @@ async function runTests() {
     const webhookResult = await makeRequest('/webhook/trade', {
       method: 'POST',
       body: JSON.stringify({
-        account_login: createAccountResult.data.login,
+        account_login: createAccountResult.data.data ? createAccountResult.data.data.login : createAccountResult.data.login,
         type: 'BUY',
         volume: 1.0,
         open_time: new Date().toISOString(),
@@ -146,7 +149,12 @@ async function runTests() {
 
     if (webhookResult.data && webhookResult.data.trade_id) {
       tradeId = webhookResult.data.trade_id;
-      console.log(`✅ Trade creado via webhook con ID: ${tradeId}\n`);
+      console.log(`✅ Trade creado via webhook con ID: ${tradeId}`);
+      console.log(`📊 Violaciones detectadas: ${webhookResult.data.violations_detected}`);
+      if (webhookResult.data.violations && webhookResult.data.violations.length > 0) {
+        console.log(`⚠️ Violaciones:`, webhookResult.data.violations);
+      }
+      console.log('');
     }
   }
 
