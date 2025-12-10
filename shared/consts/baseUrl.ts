@@ -1,0 +1,1 @@
+export const apiBaseUrl = process.env.NEXT_PUBLIC_ENV == "dev"? process.env.NEXT_PUBLIC_BASE_URL_DEV: process.env.NEXT_PUBLIC_BASE_URL

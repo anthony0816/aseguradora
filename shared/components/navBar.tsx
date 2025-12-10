@@ -1,9 +1,10 @@
-import { HStack } from "@chakra-ui/react";
+import { HStack, Flex } from "@chakra-ui/react";
 import MobileLateralMenu from "./mobileLateralMenu";
 import useNavegables from "../hooks/useNavegables";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import UserCard from "@/core/user/components/userCard";
+import NotificationsButton from "./notificationsButton";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function NavBar() {
@@ -26,6 +27,9 @@ export default function NavBar() {
       py={1}
       shadow="sm"
       width="100%"
+      position="sticky"
+      top={0}
+      zIndex={10}
       _dark={{
         borderColor: "gray.700",
         bg: "gray.900",
@@ -38,8 +42,12 @@ export default function NavBar() {
         triggerSize={"xs"}
         open={openMenu}
         setOpen={setOpenMenu}
+        onTitleClick={() => navegate("/aseguradora")}
       />
-      <UserCard />
+      <Flex gap={2} align="center">
+        <NotificationsButton />
+        <UserCard />
+      </Flex>
     </HStack>
   );
 }

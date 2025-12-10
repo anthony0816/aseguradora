@@ -12,6 +12,7 @@ interface MobileLateralMenuProps {
   triggerSize?: ButtonProps["size"];
   open: boolean;
   setOpen: (open: boolean) => void;
+  onTitleClick?: () => void;
 }
 
 export default function MobileLateralMenu({
@@ -21,6 +22,7 @@ export default function MobileLateralMenu({
   triggerSize = "sm",
   open,
   setOpen,
+  onTitleClick,
 }: MobileLateralMenuProps) {
   return (
     <Drawer.Root
@@ -40,7 +42,14 @@ export default function MobileLateralMenu({
         <Drawer.Positioner>
           <Drawer.Content>
             <Drawer.Header>
-              <Drawer.Title>{title}</Drawer.Title>
+              <Drawer.Title
+                cursor={onTitleClick ? "pointer" : "default"}
+                onClick={onTitleClick}
+                _hover={onTitleClick ? { color: "blue.500" } : {}}
+                transition="color 0.2s"
+              >
+                {title}
+              </Drawer.Title>
             </Drawer.Header>
             <Drawer.Body>
               <AcordionOptions items={items} />

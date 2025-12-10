@@ -13,6 +13,7 @@ import AcordionOptions from "./acordionOptions";
 import useNavegables from "../hooks/useNavegables";
 import { useRouter } from "next/navigation";
 import UserCard from "@/core/user/components/userCard";
+import NotificationsButton from "./notificationsButton";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface LayoutProviderProps {
@@ -55,7 +56,18 @@ export default function LayoutProvider({ children }: LayoutProviderProps) {
             rounded={"xl"}
           >
             <Box flex={1}>
-              <Heading as={"h1"}> Aseguradora</Heading>
+              <Flex justify="space-between" align="center" mb={2}>
+                <Heading
+                  as={"h1"}
+                  cursor="pointer"
+                  onClick={() => navegate("/aseguradora")}
+                  _hover={{ color: "blue.500" }}
+                  transition="color 0.2s"
+                >
+                  Aseguradora
+                </Heading>
+                <NotificationsButton />
+              </Flex>
               <Separator mb={10} />
               <Box overflowY={"auto"} overflowX={"hidden"} maxH={"80vh"}>
                 <AcordionOptions items={useNavegables({ router: navegate })} />

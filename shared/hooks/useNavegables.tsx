@@ -5,6 +5,7 @@ import AcordionOptionsTitle from "../components/acordionOptionsTitle";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import SignalCellularAltIcon from "@mui/icons-material/SignalCellularAlt";
 import SquareFootIcon from "@mui/icons-material/SquareFoot";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AddIcon from "@mui/icons-material/Add";
 
 interface useNavegablesProps {
@@ -14,6 +15,32 @@ export default function useNavegables({
   router,
 }: useNavegablesProps): AcordionOptionsProps[] {
   return [
+    {
+      value: "Accounts",
+      title: (
+        <AcordionOptionsTitle
+          icon={<AccountBalanceIcon />}
+          size={"md"}
+          title="Cuentas"
+        />
+      ),
+      text: [
+        <AcordionOptionsContent
+          key={"listAccounts"}
+          icon={<FormatListNumberedIcon />}
+          size={"md"}
+          title="Mis cuentas"
+          onClick={() => router("/aseguradora/listAccounts")}
+        />,
+        <AcordionOptionsContent
+          key={"createAccount"}
+          icon={<AddIcon />}
+          title="Crear cuenta"
+          size={"md"}
+          onClick={() => router("/aseguradora/createAccount")}
+        />,
+      ],
+    },
     {
       value: "Trades",
       title: (
@@ -28,13 +55,13 @@ export default function useNavegables({
           key={"listTrades"}
           icon={<FormatListNumberedIcon />}
           size={"md"}
-          title="list trades"
+          title="Mis trades"
           onClick={() => router("/aseguradora/listTrades")}
         />,
         <AcordionOptionsContent
           key={"createTrade"}
           icon={<AddIcon />}
-          title="Create new Trade"
+          title="Crear trade"
           size={"md"}
           onClick={() => router("/aseguradora/createTrade")}
         />,
@@ -46,7 +73,7 @@ export default function useNavegables({
         <AcordionOptionsTitle
           icon={<SquareFootIcon />}
           size={"md"}
-          title="Rules"
+          title="Reglas"
         />
       ),
       text: [
@@ -54,14 +81,14 @@ export default function useNavegables({
           key={"listRules"}
           icon={<FormatListNumberedIcon />}
           size={"md"}
-          title="list rules"
+          title="Mis reglas"
           onClick={() => router("/aseguradora/listRules")}
         />,
         <AcordionOptionsContent
           key={"createRule"}
           icon={<AddIcon />}
           size={"md"}
-          title="Create new Rule"
+          title="Crear regla"
           onClick={() => router("/aseguradora/createRule")}
         />,
       ],
